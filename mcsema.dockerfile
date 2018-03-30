@@ -1,5 +1,6 @@
-# docker build . -f mcsema.dockerfile -t mcsema && docker run --rm -ti mcsema /bin/bash
+# docker build . -f mcsema.dockerfile -t mcsema
 # docker system prune
+# docker run --rm -ti --mount type=bind,source=$(echo ~/mcsema/tools/mcsema_disass),target=/home/mcsema/remill/tools/mcsema/tools/mcsema_disass/ --name=mcsema mcsema /bin/bash
 
 FROM ubuntu:16.04
 LABEL maintainer="Toizi"
@@ -30,7 +31,7 @@ RUN useradd -m mcsema && \
 USER mcsema
 WORKDIR /home/mcsema
 
-RUN git clone --depth 1 https://github.com/trailofbits/mcsema.git && \
+RUN git clone -b radare2_support https://github.com/toizi/mcsema.git && \
     export REMILL_VERSION=`cat ./mcsema/.remill_commit_id` && \
     git clone https://github.com/trailofbits/remill.git && \
     cd remill && \
@@ -38,5 +39,15 @@ RUN git clone --depth 1 https://github.com/trailofbits/mcsema.git && \
     mv ../mcsema tools && \
     ./scripts/build.sh && \
     cd remill-build && \
-    sudo make install
-RUN sudo chmod o+r /usr/local/lib/python2.7/dist-packages/protobuf*/EGG-INFO/*
+    sudo make install && \
+    sudo chmod o+r /usr/local/lib/python2.7/dist-packages/protobuf*/EGG-INFO/*
+
+RUN git clone https://github.com/radare/radare2.git && \
+    sudo radare2/sys/install.sh && \
+    sudo apt-get -y install pkg-config swig2.0 valabind && \
+    r2pm init && \
+    r2pm update && \
+    sudo r2pm install lang-python2 && \
+    sudo r2pm install r2api-python && \
+    sudo r2pm install r2pipe-py && \
+    sudo pip install r2pipe
