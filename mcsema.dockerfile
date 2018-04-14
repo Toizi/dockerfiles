@@ -1,6 +1,6 @@
 # docker build . -f mcsema.dockerfile -t mcsema
 # docker system prune
-# docker run --rm -ti --mount type=bind,source=$(echo ~/mcsema/tools/mcsema_disass),target=/home/mcsema/remill/tools/mcsema/tools/mcsema_disass/ --name=mcsema mcsema /bin/bash
+# docker run --privileged -ti --mount type=bind,source=$(echo ~/mcsema/),target=/home/mcsema/remill/tools/mcsema/ --name=mcsema mcsema /bin/bash
 
 FROM ubuntu:16.04
 LABEL maintainer="Toizi"
